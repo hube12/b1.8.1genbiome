@@ -94,7 +94,7 @@ FORCEINLINE DEVICEABLE uint32_t get_max_size(uint8_t size) {
         assert(false);
     }
     uint32_t voronoi_size = ((size >> 2u) + 3) << 2u;
-    return size < 4 ? 7 * 7 * 2 * 2 : voronoi_size * voronoi_size;
+    return size < 4 ? (7+1) * (7+1) * 2 * 2 : voronoi_size * voronoi_size;
 }
 
 FORCEINLINE DEVICEABLE int64_t mix_seed(int64_t world_seed, int64_t salt) {
@@ -484,10 +484,35 @@ FORCEINLINE DEVICEABLE int32_t *get_size(int32_t size_x, int32_t size_z) {
 }
 
 FORCEINLINE DEVICEABLE int32_t *get_for_layer(const int32_t *layers, uint8_t layer_id) {
-    return new int32_t[]{layers[2 + SIZE_LAYER * 2 - layer_id * 2 -1],
-                         layers[2 + SIZE_LAYER * 2 - layer_id * 2],
-                         layers[2 + SIZE_LAYER * 4 - layer_id * 2 -1],
-                         layers[2 + SIZE_LAYER * 4 - layer_id * 2 ]};
+    return new int32_t[]{layers[2 + SIZE_LAYER * 2 - layer_id * 2 -2],
+                         layers[2 + SIZE_LAYER * 2 - layer_id * 2 -1],
+                         layers[2 + SIZE_LAYER * 4 - layer_id * 2 -2],
+                         layers[2 + SIZE_LAYER * 4 - layer_id * 2 -1 ]};
 }
+
+DEVICEABLE void print_array_u8(uint8_t *arr, uint32_t size) {
+    for (uint32_t i = 0; i < size; i++)
+        printf("%d,", arr[i]);
+    printf("\n");
+}
+
+DEVICEABLE void print_array_i32(int32_t *arr, uint32_t size) {
+    for (uint32_t i = 0; i < size; i++)
+        printf("%d,", arr[i]);
+    printf("\n");
+}
+
+struct Layer{
+    int64_t layer_seed;
+    Layer* parents;
+    uint8_t* cache;
+};
+
+struct LayerStack{
+    Layer* layers;
+};
+
+
+
 
 #endif //UTIL_CUH
